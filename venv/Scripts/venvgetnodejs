@@ -1,0 +1,154 @@
+#!C:\Users\Vicky\PycharmProjects\proy-EO\venv\Scripts\python.exe
+# coding=utf-8
+
+import os
+import sys
+import argparse
+import logging
+from distutils.spawn import find_executable
+from itertools import ifilterfalse
+import tarfile
+import shutil
+import subprocess
+import urllib2
+from xdg import BaseDirectory
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
+
+
+def download(url, local_path=None):
+    resp = urllib2.urlopen(url)
+
+    content_disp = resp.info().get('Content-Disposition')
+
+    if local_path:
+        local_path = local_path
+    elif content_disp:
+        local_path = content_disp.split('filename=')[1].strip('\'\" ')
+    else:
+        local_path = os.path.basename(url)
+
+    if os.path.exists(local_path):
+        logger.warning('%s exists, not saved', local_path)
+    else:
+        with open(local_path, 'wb') as f:
+            f.write(resp.read())
+            logger.info('Saved as %s', local_path)
+
+    return local_path
+
+
+def has_executable(prog):
+    '''
+    >>> has_executable('ls')
+    True
+    >>> has_executable('lllsss')
+    False
+    '''
+    return True if find_executable(prog) else False
+
+
+def run(cmd, echo=True):
+    '''Run shell command, with echo support
+
+    Args:
+        cmd:
+            command to execute
+        echo:
+            bool value enables/disables command echo,
+            str value specifies the string to echo
+    '''
+    if isinstance(echo, basestring):
+        logger.info(echo)
+    elif echo:
+        logger.info(cmd)
+    return subprocess.call(cmd, shell=True)
+
+
+def fatal_exit(msg, status=1):
+    logger.critical(msg)
+    sys.exit(status)
+
+
+if __name__ == '__main__':
+    # check dependencies
+    deps = ['gcc', 'make', ]
+    not_satisfied = list(ifilterfalse(has_executable, deps))
+    if len(not_satisfied):
+        fatal_exit('%s not found!' % ' '.join(not_satisfied))
+
+    # get active virtualenv
+    active_env = os.environ.get('VIRTUAL_ENV')
+    if not active_env:
+        fatal_exit('Must be in virtualenv')
+
+    parser = argparse.ArgumentParser(
+        description='Install Nodejs in python virtualenv'
+    )
+    parser.add_argument('-v', '--version', default='0.10.33',
+                        help="Nodejs version to install")
+    parser.add_argument('--doctest', action='store_true',
+                        help="run doctest")
+    parser.add_argument('--clean', action='store_true',
+                        help="clean downloaded and built files")
+
+    args = parser.parse_args()
+
+    if args.doctest:
+        import doctest
+        doctest.testmod()
+        sys.exit(0)
+
+    logger.info('node version: %s' % args.version)
+
+    nodejs_url = "http://nodejs.org/dist/v%(v)s/node-v%(v)s.tar.gz" \
+        % {'v': args.version}
+
+    # used to store downloaded files
+    cache_dir = os.path.join(BaseDirectory.xdg_cache_home, 'venvgetnodejs')
+
+    # used to do build
+    building_dir = os.path.join(active_env, 'tmp/venvgetnodejs')
+
+    if args.clean:
+        logger.info('Removing %s' % building_dir)
+        os.path.isdir(building_dir) and shutil.rmtree(building_dir)
+        sys.exit(0)
+
+    # Create dirs
+    for p in [cache_dir, building_dir]:
+        logger.info('mkdir %s' % p)
+        os.path.isdir(p) or os.makedirs(p)
+
+    # Download nodejs
+    nodejs_ball = os.path.join(cache_dir, os.path.basename(nodejs_url))
+    if os.path.exists(nodejs_ball):
+        logger.info('%s alreay exists, not download' % nodejs_ball)
+    else:
+        logger.info('Downloading %s to %s' % (nodejs_url, nodejs_ball))
+        download(nodejs_url, nodejs_ball)
+
+    # Extract
+    logger.info('Extracting %s' % nodejs_ball)
+    with tarfile.open(nodejs_ball) as tf:
+        tf.extractall(path=building_dir)
+
+    # Get into src dir
+    nodejs_src_dir = os.path.join(building_dir, os.path.basename(nodejs_url))\
+        .replace('.tar.gz', '')
+    logger.info('Get into %s' % nodejs_src_dir)
+    os.chdir(nodejs_src_dir)
+
+    if run('python2 ./configure --prefix=%s' % active_env) != 0:
+        fatal_exit('configure failed')
+
+    if run('make -j4') != 0:
+        fatal_exit('compile failed')
+
+    if run('make install') != 0:
+        fatal_exit('install failed')
+
+    if run(urllib2.urlopen('https://www.npmjs.com/install.sh').read(),
+           echo='Installing npm') != 0:
+        fatal_exit('Install failed')

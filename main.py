@@ -1,12 +1,20 @@
 from tkinter import *
 from tkinter import ttk
-
+from yahoo_fin.stock_info import *
+import re
+import ftplib
+from pygal import *
 
 def calculate(*args):
     try:
         value = symbol.get().upper()
-        # Filtrar numeros y otros caracteres
-        result.set(value)
+        sdate = start_date.get()
+        edate = end_date.get()
+        #data = get_data(value, start_date=sdate, end_date=edate)
+        data = get_data('FB', start_date='01/02/2018', end_date='01/10/2018')["close"].round(2)
+        for y in data:
+            print(y)
+        result.set(data)
     except ValueError:
         result.set("Revise los datos ingresados")
         pass
@@ -47,6 +55,7 @@ ttk.Label(mainframe, text="Tasa de interés").grid(column=1, row=2, sticky=W)
 #ttk.Label(mainframe, text="Riesgo").grid(column=1, row=3, sticky=W)
 ttk.Label(mainframe, text="Fecha inicial").grid(column=1, row=4, sticky=W)
 ttk.Label(mainframe, text="Fecha final").grid(column=2, row=4, sticky=W)
+ttk.Label(mainframe, text="(ej: MM/DD/YYYY)").grid(column=3, row=5)
 #ttk.Label(mainframe, text="is equivalent to").grid(column=1, row=2, sticky=E)
 ttk.Label(mainframe, text="Resultado").grid(column=1, row=6, sticky=W)
 
