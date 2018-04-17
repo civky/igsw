@@ -1,19 +1,28 @@
 from tkinter import *
 from tkinter import ttk
 from yahoo_fin.stock_info import *
-import re
-import ftplib
+import re, socket
 from pygal import *
+
+def is_connected():
+    try:
+        socket.create_connection(("www.google.com", 80))
+        return True
+    except OSError:
+        pass
+    return False
 
 def calculate(*args):
     try:
         value = symbol.get().upper()
         sdate = start_date.get()
         edate = end_date.get()
-        #data = get_data(value, start_date=sdate, end_date=edate)
-        data = get_data('FB', start_date='01/02/2018', end_date='01/10/2018')["close"].round(2)
+        inter = float(interest.get())
+        data = get_data(value, start_date=sdate, end_date=edate)["close"].round(2)
+        #data = get_data('FB', start_date='01/02/2018', end_date='01/10/2018')["close"].round(2)
         for y in data:
             print(y)
+        print(inter+2)
         result.set(data)
     except ValueError:
         result.set("Revise los datos ingresados")
@@ -21,7 +30,7 @@ def calculate(*args):
 
 
 window = Tk()
-window.title("Valorización de opciones")
+window.title("Valorización de opciones sobre acciones")
 
 mainframe = ttk.Frame(window, padding="12 12 12 12")
 mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
@@ -29,7 +38,7 @@ mainframe.columnconfigure(0, weight=1)
 mainframe.rowconfigure(0, weight=1)
 
 symbol = StringVar()
-interest = IntVar()
+interest = StringVar()
 risk = IntVar()
 start_date = StringVar()
 end_date = StringVar()
@@ -48,7 +57,7 @@ end_date_entry = ttk.Entry(mainframe, width=13, textvariable=end_date)
 end_date_entry.grid(column=2, row=5, sticky=(W, E))
 
 ttk.Label(mainframe, textvariable=result).grid(column=2, row=6, sticky=(W, E))
-ttk.Button(mainframe, text="Calcular", command=calculate).grid(column=3, row=8, sticky=W)
+ttk.Button(mainframe, text="Calcular", command=calculate).grid(column=4, row=8)
 
 ttk.Label(mainframe, text="Código empresa").grid(column=1, row=1, sticky=W)
 ttk.Label(mainframe, text="Tasa de interés").grid(column=1, row=2, sticky=W)
@@ -58,6 +67,12 @@ ttk.Label(mainframe, text="Fecha final").grid(column=2, row=4, sticky=W)
 ttk.Label(mainframe, text="(ej: MM/DD/YYYY)").grid(column=3, row=5)
 #ttk.Label(mainframe, text="is equivalent to").grid(column=1, row=2, sticky=E)
 ttk.Label(mainframe, text="Resultado").grid(column=1, row=6, sticky=W)
+
+state = is_connected()
+if state:
+    ttk.Label(mainframe, text="Conectado", foreground='green').grid(column=4, row=1, sticky=E)
+else:
+    ttk.Label(mainframe, text="Desconectado", foreground='red').grid(column=4, row=1, sticky=E)
 
 for child in mainframe.winfo_children(): child.grid_configure(padx=20, pady=5)
 
