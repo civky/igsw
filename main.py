@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from yahoo_fin.stock_info import *
+from datetime import timedelta, date
 import re, socket
 from pygal import *
 
@@ -40,6 +41,7 @@ mainframe.rowconfigure(0, weight=1)
 symbol = StringVar()
 interest = StringVar()
 risk = IntVar()
+t_madurez = IntVar()
 start_date = StringVar()
 end_date = StringVar()
 result = StringVar()
@@ -50,6 +52,9 @@ symbol_entry.grid(column=2, row=1, sticky=(W, E))
 interest_entry = ttk.Entry(mainframe, width=13, textvariable=interest)
 interest_entry.grid(column=2, row=2, sticky=(W, E))
 
+t_madurez_entry = ttk.Entry(mainframe, width=13, textvariable=t_madurez)
+t_madurez_entry.grid(column=4, row=1, sticky=(W,E))
+
 start_date_entry = ttk.Entry(mainframe, width=13, textvariable=start_date)
 start_date_entry.grid(column=1, row=5, sticky=(W, E))
 
@@ -57,11 +62,11 @@ end_date_entry = ttk.Entry(mainframe, width=13, textvariable=end_date)
 end_date_entry.grid(column=2, row=5, sticky=(W, E))
 
 ttk.Label(mainframe, textvariable=result).grid(column=2, row=6, sticky=(W, E))
-ttk.Button(mainframe, text="Calcular", command=calculate).grid(column=4, row=8)
+ttk.Button(mainframe, text="Calcular", command=calculate).grid(column=4, row=7)
 
-ttk.Label(mainframe, text="Código empresa").grid(column=1, row=1, sticky=W)
-ttk.Label(mainframe, text="Tasa de interés").grid(column=1, row=2, sticky=W)
-#ttk.Label(mainframe, text="Riesgo").grid(column=1, row=3, sticky=W)
+ttk.Label(mainframe, text="Código empresa").grid(column=1, row=2, sticky=W)
+ttk.Label(mainframe, text="Tasa de interés").grid(column=1, row=1, sticky=W)
+ttk.Label(mainframe, text="Tiempo de madurez").grid(column=3, row=1, sticky=W)
 ttk.Label(mainframe, text="Fecha inicial").grid(column=1, row=4, sticky=W)
 ttk.Label(mainframe, text="Fecha final").grid(column=2, row=4, sticky=W)
 ttk.Label(mainframe, text="(ej: MM/DD/YYYY)").grid(column=3, row=5)
@@ -70,9 +75,9 @@ ttk.Label(mainframe, text="Resultado").grid(column=1, row=6, sticky=W)
 
 state = is_connected()
 if state:
-    ttk.Label(mainframe, text="Conectado", foreground='green').grid(column=4, row=1, sticky=E)
+    ttk.Label(mainframe, text="Conectado", foreground='green').grid(column=4, row=9, sticky=E)
 else:
-    ttk.Label(mainframe, text="Desconectado", foreground='red').grid(column=4, row=1, sticky=E)
+    ttk.Label(mainframe, text="Desconectado", foreground='red').grid(column=4, row=9, sticky=E)
 
 for child in mainframe.winfo_children(): child.grid_configure(padx=20, pady=5)
 
