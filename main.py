@@ -2,11 +2,12 @@ from tkinter import *
 from tkinter import ttk
 from yahoo_fin.stock_info import *
 from datetime import timedelta, date
-import re, socket
+import socket
+import numpy as np
 from pygal import *
 from pandas import *
-#from rpy2.robjects.packages import importr
-#import rpy2.robjects as ro
+from rpy2.robjects.packages import importr
+import rpy2.robjects as ro
 #import pandas.rpy.common as com
 
 def is_connected():
@@ -41,18 +42,104 @@ def data_cost():
             for y in get_data(symbol.get().upper(), start_date=i_date, end_date=f_date)["close"].round(2):
                 costs.append(y)
             #print('2' + str(costs))
-            break
+            return costs
 
         elif end == f_date:
-            break
+            return costs
 
 
+def calcular_r_sub_j(x):
+    r = list()  # Aqui iran los r_j
+    for i in range(len(x) - 1):
+        r_i = np.log(x[i + 1] / x[i])
+        r.append(r_i)
+    return r
+
+def calcular_esperanza_compra(lista_xt_finales, k, N):
+    #N = 1000 #Numero de simulaciones
+    sum = 0
+    for i in range(len(lista_xt_finales)):
+        m = max(lista_xt_finales[i] - k, 0)
+        sum = sum + m
+    return sum/N
+
+def calcular_esperanza_venta(lista_xt_finales, k, N):
+    #N = 1000 #Numero de simulaciones
+    sum = 0
+    for i in range(len(lista_xt_finales)):
+        m = max(k - lista_xt_finales[i], 0)
+        sum = sum + m
+    return sum/N
 
 def calculate(*args):
     try:
+        #Tiempo_maduracion = t_madurez.get()
+        x = data_cost()
+        print(x)
+        r = float(interest.get())/12
+        #k = sum(x)/len(x)
+        # AGREGAR A INTERFAZ
 
-        inter = float(interest.get())
-        result.set(data_cost())
+        r_p = calcular_r_sub_j(x)
+        sigma = np.std(r_p)
+
+        # Ahora calculamos los x_t a futuro hasta el tiempo de maduracion T
+
+        T = t_madurez.get() / 12  # Tiempo_maduracion esta en meses
+        lista_x_simulacion = list()  # Lista donde dejare los x_t que voy simulando
+        lista_x_finales = list()  # Lista donde dejare los x_T
+        x_final = x[-1]  # Obtenemos el ultimo x_t de los datos obtenidos de Yahoo Finances
+        n = 1000
+
+        # Esto esta dentro de un for con la cantidad de simulaciones que queremos hacer
+        for j in range(n):  # Elegi 1000, pero pueden ser mas
+            dt = T / (T * 365)
+
+            #print(T)
+
+            for i in range(int(T * 365)):
+                #epsilon = ro.r('sample(rnorm(1000, mean=0, sd=' + str(4) + '), 1)')[0]
+
+                if i == 0:
+                    epsilon = ro.r('sample(rnorm(1000, mean=0, sd=' + str(i+1) + '), 1)')[0]  # Esta linea esta en R
+                    dWu = epsilon * (dt ** 0.5)
+                    dXt = (r * x_final * dt) + (sigma * x_final * dWu)
+                    x_t_futuro = x_final + dXt
+
+                else:
+                    epsilon = ro.r('sample(rnorm(1000, mean=0, sd=' + str(i) + '), 1)')[0]  # Esta linea esta en R
+                    dWu = epsilon * (dt ** 0.5)
+                    x_t_i = lista_x_simulacion[i - 1]
+                    dXt = (r * x_t_i * dt) + (sigma * x_t_i * dWu)
+                    x_t_futuro = x_t_i + dXt
+
+                lista_x_simulacion.append(x_t_futuro)
+                #print(str(lista_x_simulacion))
+
+            #print('out' + str(lista_x_simulacion))
+            lista_x_finales.append(lista_x_simulacion[-1])
+
+
+        # Lo demas que queda hacer, es calcular la esperanza con la formula que estan en las imagenes y luego
+        # multiplicarlo por e^(-r*Tiempo_maduracion)
+
+
+        print('LISTAS:' + str(lista_x_finales))
+
+        print(np.std(lista_x_finales))
+        k = int(sum(lista_x_finales) / len(lista_x_finales))
+        print(k)
+
+        esp_compra = calcular_esperanza_compra(lista_x_finales, k, n)
+        esp_venta = calcular_esperanza_venta(lista_x_finales, k, n)
+
+        print(str(esp_compra) + ':::::::' + str(esp_venta))
+
+        f_compra = esp_compra * np.exp(-r * T)
+        f_venta = esp_venta * np.exp(-r * T)
+
+
+        result.set('Valor al comprar: ' + str(f_compra.round(6)) + '\n' + 'Valor al vender: ' + str(f_venta.round(6)))
 
     except ValueError:
         result.set("Revise los datos ingresados")
