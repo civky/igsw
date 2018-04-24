@@ -4,6 +4,10 @@ from yahoo_fin.stock_info import *
 from datetime import timedelta, date
 import re, socket
 from pygal import *
+from pandas import *
+#from rpy2.robjects.packages import importr
+#import rpy2.robjects as ro
+#import pandas.rpy.common as com
 
 def is_connected():
     try:
@@ -13,22 +17,46 @@ def is_connected():
         pass
     return False
 
+def data_cost():
+
+    sdate = start_date.get().split('/')
+    edate = end_date.get().split('/')
+    i_date = date(int(sdate[2]), int(sdate[0]), int(sdate[1]))
+    f_date = date(int(edate[2]), int(edate[0]), int(edate[1]))
+    costs = []
+
+    while True:
+        end = i_date + timedelta(days=59)
+
+        if end < f_date:
+            #costs.append(get_data(symbol.get().upper(), start_date=i_date, end_date=end)["close"].round(2))
+            for y in get_data(symbol.get().upper(), start_date=i_date, end_date=end)["close"].round(2):
+                costs.append(y)
+            #print('1' + str(costs))
+            i_date = end
+            pass
+
+        elif end > f_date and i_date != f_date:
+            #costs.append(get_data(symbol.get().upper(), start_date=i_date, end_date=f_date)["close"].data.round(2))
+            for y in get_data(symbol.get().upper(), start_date=i_date, end_date=f_date)["close"].round(2):
+                costs.append(y)
+            #print('2' + str(costs))
+            break
+
+        elif end == f_date:
+            break
+
+
+
 def calculate(*args):
     try:
-        value = symbol.get().upper()
-        sdate = start_date.get()
-        edate = end_date.get()
+
         inter = float(interest.get())
-        data = get_data(value, start_date=sdate, end_date=edate)["close"].round(2)
-        #data = get_data('FB', start_date='01/02/2018', end_date='01/10/2018')["close"].round(2)
-        for y in data:
-            print(y)
-        print(inter+2)
-        result.set(data)
+        result.set(data_cost())
+
     except ValueError:
         result.set("Revise los datos ingresados")
         pass
-
 
 window = Tk()
 window.title("Valorización de opciones sobre acciones")
@@ -47,10 +75,10 @@ end_date = StringVar()
 result = StringVar()
 
 symbol_entry = ttk.Entry(mainframe, width=13, textvariable=symbol)
-symbol_entry.grid(column=2, row=1, sticky=(W, E))
+symbol_entry.grid(column=2, row=2, sticky=(W, E))
 
 interest_entry = ttk.Entry(mainframe, width=13, textvariable=interest)
-interest_entry.grid(column=2, row=2, sticky=(W, E))
+interest_entry.grid(column=2, row=1, sticky=(W, E))
 
 t_madurez_entry = ttk.Entry(mainframe, width=13, textvariable=t_madurez)
 t_madurez_entry.grid(column=4, row=1, sticky=(W,E))
