@@ -35,7 +35,7 @@ def data_cost():
                 costs.append(y)
             #print('1' + str(costs))
             i_date = end
-            pass
+            continueg
 
         elif end > f_date and i_date != f_date:
             #costs.append(get_data(symbol.get().upper(), start_date=i_date, end_date=f_date)["close"].data.round(2))
