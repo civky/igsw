@@ -3,11 +3,11 @@ from tkinter import ttk
 from yahoo_fin.stock_info import *
 from datetime import timedelta, date
 import socket
+from pandas import *
+import rpy2.robjects as ro
 import numpy as np
 from pygal import *
-from pandas import *
-from rpy2.robjects.packages import importr
-import rpy2.robjects as ro
+#from rpy2.robjects.packages import importr
 #import pandas.rpy.common as com
 
 def is_connected():
@@ -89,7 +89,7 @@ def calculate(*args):
         lista_x_simulacion = list()  # Lista donde dejare los x_t que voy simulando
         lista_x_finales = list()  # Lista donde dejare los x_T
         x_final = x[-1]  # Obtenemos el ultimo x_t de los datos obtenidos de Yahoo Finances
-        n = 1000
+        n = int(n_iter.get()) #Número de iteraciones
 
         # Esto esta dentro de un for con la cantidad de simulaciones que queremos hacer
         for j in range(n):  # Elegi 1000, pero pueden ser mas
@@ -124,11 +124,11 @@ def calculate(*args):
         # multiplicarlo por e^(-r*Tiempo_maduracion)
 
 
-        print('LISTAS:' + str(lista_x_finales))
+        #print('LISTAS:' + str(lista_x_finales))
 
-        print(np.std(lista_x_finales))
+        #print(np.std(lista_x_finales))
         k = int(sum(lista_x_finales) / len(lista_x_finales))
-        print(k)
+        #print(k)
 
         esp_compra = calcular_esperanza_compra(lista_x_finales, k, n)
         esp_venta = calcular_esperanza_venta(lista_x_finales, k, n)
@@ -157,6 +157,7 @@ symbol = StringVar()
 interest = StringVar()
 risk = IntVar()
 t_madurez = IntVar()
+n_iter = IntVar()
 start_date = StringVar()
 end_date = StringVar()
 result = StringVar()
@@ -170,6 +171,9 @@ interest_entry.grid(column=2, row=1, sticky=(W, E))
 t_madurez_entry = ttk.Entry(mainframe, width=13, textvariable=t_madurez)
 t_madurez_entry.grid(column=4, row=1, sticky=(W,E))
 
+n_iter_entry = ttk.Entry(mainframe, width=13, textvariable=n_iter)
+n_iter_entry.grid(column=4, row=2, sticky=(W,E))
+
 start_date_entry = ttk.Entry(mainframe, width=13, textvariable=start_date)
 start_date_entry.grid(column=1, row=5, sticky=(W, E))
 
@@ -182,6 +186,7 @@ ttk.Button(mainframe, text="Calcular", command=calculate).grid(column=4, row=7)
 ttk.Label(mainframe, text="Código empresa").grid(column=1, row=2, sticky=W)
 ttk.Label(mainframe, text="Tasa de interés").grid(column=1, row=1, sticky=W)
 ttk.Label(mainframe, text="Tiempo de madurez").grid(column=3, row=1, sticky=W)
+ttk.Label(mainframe, text="Número de iteraciones").grid(column=3, row=2, sticky=W)
 ttk.Label(mainframe, text="Fecha inicial").grid(column=1, row=4, sticky=W)
 ttk.Label(mainframe, text="Fecha final").grid(column=2, row=4, sticky=W)
 ttk.Label(mainframe, text="(ej: MM/DD/YYYY)").grid(column=3, row=5)
