@@ -1,12 +1,12 @@
 from tkinter import *
-from tkinter import ttk
+#from tkinter import ttk
 from yahoo_fin.stock_info import *
 from datetime import timedelta, date
 import socket
 from pandas import *
 import rpy2.robjects as ro
 import numpy as np
-from pygal import *
+import pygal #graficos
 #from rpy2.robjects.packages import importr
 #import pandas.rpy.common as com
 
@@ -92,7 +92,7 @@ def calculate(*args):
         n = int(n_iter.get()) #Número de iteraciones
 
         # Esto esta dentro de un for con la cantidad de simulaciones que queremos hacer
-        for j in range(n):  # Elegi 1000, pero pueden ser mas
+        for j in range(n):
             dt = T / (T * 365)
 
             #print(T)
@@ -147,8 +147,10 @@ def calculate(*args):
 
 window = Tk()
 window.title("Valorización de opciones sobre acciones")
+window.configure(bg="#2E3037")
 
-mainframe = ttk.Frame(window, padding="12 12 12 12")
+mainframe = Frame(window, bg="#2E3037")
+# padding="12 12 12 12", 
 mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
 mainframe.columnconfigure(0, weight=1)
 mainframe.rowconfigure(0, weight=1)
@@ -162,44 +164,49 @@ start_date = StringVar()
 end_date = StringVar()
 result = StringVar()
 
-symbol_entry = ttk.Entry(mainframe, width=13, textvariable=symbol)
+symbol_entry = Entry(mainframe, width=13, textvariable=symbol)
 symbol_entry.grid(column=2, row=2, sticky=(W, E))
 
-interest_entry = ttk.Entry(mainframe, width=13, textvariable=interest)
+interest_entry = Entry(mainframe, width=13, textvariable=interest)
 interest_entry.grid(column=2, row=1, sticky=(W, E))
 
-t_madurez_entry = ttk.Entry(mainframe, width=13, textvariable=t_madurez)
+t_madurez_entry = Entry(mainframe, width=13, textvariable=t_madurez)
 t_madurez_entry.grid(column=4, row=1, sticky=(W,E))
 
-n_iter_entry = ttk.Entry(mainframe, width=13, textvariable=n_iter)
+n_iter_entry = Entry(mainframe, width=13, textvariable=n_iter)
 n_iter_entry.grid(column=4, row=2, sticky=(W,E))
 
-start_date_entry = ttk.Entry(mainframe, width=13, textvariable=start_date)
+start_date_entry = Entry(mainframe, width=13, textvariable=start_date)
 start_date_entry.grid(column=1, row=5, sticky=(W, E))
 
-end_date_entry = ttk.Entry(mainframe, width=13, textvariable=end_date)
+end_date_entry = Entry(mainframe, width=13, textvariable=end_date)
 end_date_entry.grid(column=2, row=5, sticky=(W, E))
 
-ttk.Label(mainframe, textvariable=result).grid(column=2, row=6, sticky=(W, E))
-ttk.Button(mainframe, text="Calcular", command=calculate).grid(column=4, row=7)
+Label(mainframe, textvariable=result).grid(column=2, row=6, sticky=(W, E))
 
-ttk.Label(mainframe, text="Código empresa").grid(column=1, row=2, sticky=W)
-ttk.Label(mainframe, text="Tasa de interés").grid(column=1, row=1, sticky=W)
-ttk.Label(mainframe, text="Tiempo de madurez").grid(column=3, row=1, sticky=W)
-ttk.Label(mainframe, text="Número de iteraciones").grid(column=3, row=2, sticky=W)
-ttk.Label(mainframe, text="Fecha inicial").grid(column=1, row=4, sticky=W)
-ttk.Label(mainframe, text="Fecha final").grid(column=2, row=4, sticky=W)
-ttk.Label(mainframe, text="(ej: MM/DD/YYYY)").grid(column=3, row=5)
-#ttk.Label(mainframe, text="is equivalent to").grid(column=1, row=2, sticky=E)
-ttk.Label(mainframe, text="Resultado").grid(column=1, row=6, sticky=W)
+Button(mainframe, text="Calcular", command=calculate, bg="#39C0BA", fg="white").grid(column=4, row=7)
+
+Label(mainframe, text="Código empresa", bg="#2E3037", fg="white").grid(column=1, row=2, sticky=W)
+Label(mainframe, text="Tasa de interés", bg="#2E3037", fg="white").grid(column=1, row=1, sticky=W)
+Label(mainframe, text="Tiempo de madurez", bg="#2E3037", fg="white").grid(column=3, row=1, sticky=W)
+Label(mainframe, text="Número de iteraciones", bg="#2E3037", fg="white").grid(column=3, row=2, sticky=W)
+Label(mainframe, text="Fecha inicial", bg="#2E3037", fg="white").grid(column=1, row=4, sticky=W)
+Label(mainframe, text="Fecha final", bg="#2E3037", fg="white").grid(column=2, row=4, sticky=W)
+Label(mainframe, text="(ej: MM/DD/YYYY)", bg="#2E3037", fg="white").grid(column=3, row=5)
+#Label(mainframe, text="is equivalent to").grid(column=1, row=2, sticky=E)
+Label(mainframe, text="Resultado", bg="#2E3037", fg="white").grid(column=1, row=6, sticky=W)
 
 state = is_connected()
 if state:
-    ttk.Label(mainframe, text="Conectado", foreground='green').grid(column=4, row=9, sticky=E)
+    Label(mainframe, text="Conectado", foreground='green', bg="#2E3037").grid(column=4, row=9, sticky=E)
 else:
-    ttk.Label(mainframe, text="Desconectado", foreground='red').grid(column=4, row=9, sticky=E)
+    Label(mainframe, text="Desconectado", foreground='red', bg="#2E3037").grid(column=4, row=9, sticky=E)
 
 for child in mainframe.winfo_children(): child.grid_configure(padx=20, pady=5)
+
+bar_chart = pygal.Bar()                                            # Then create a bar graph object
+bar_chart.add('Fibonacci', [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55])  # Add some values
+bar_chart.render_to_file('bar_chart.svg')
 
 symbol_entry.focus()
 window.bind('<Return>', calculate)
