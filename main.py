@@ -6,9 +6,43 @@ import socket
 from pandas import *
 import rpy2.robjects as ro
 import numpy as np
-import pygal #graficos
+import pygal
+import matplotlib
+matplotlib.use('TkAgg')
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+#import cairosvg
 #from rpy2.robjects.packages import importr
 #import pandas.rpy.common as com
+
+
+class mclass:
+    def __init__(self, window, lista_x_finales):
+        self.window = window
+        self.lista_x_finales = lista_x_finales
+        self.plot()
+
+    def plot(self):
+        x = np.arange(int(min(self.lista_x_finales)), int(max(self.lista_x_finales))+2)
+        #print(x)
+        # v = np.array([16,16.31925,17.6394,16.003,17.2861,17.3131,19.1259,18.9694,22.0003,22.81226])
+        #print(len(self.lista_x_finales))
+        p = np.array(self.lista_x_finales)
+        #print(p)
+
+        fig = Figure(figsize=(8, 8))
+        a = fig.add_subplot(111)
+        #a.scatter(x,color='red')
+        a.plot(p, p, color='blue')
+        #a.invert_yaxis()
+
+        a.set_title("Estimation Grid", fontsize=10)
+        a.set_ylabel("Y", fontsize=10)
+        a.set_xlabel("X", fontsize=10)
+
+        canvas = FigureCanvasTkAgg(fig, master=self.window)
+        canvas.get_tk_widget().grid(column=4, row=1)
+        canvas.draw()
 
 def is_connected():
     try:
@@ -18,15 +52,16 @@ def is_connected():
         pass
     return False
 
+
 def data_cost():
 
     sdate = start_date.get().split('/')
     edate = end_date.get().split('/')
     i_date = date(int(sdate[2]), int(sdate[0]), int(sdate[1]))
     f_date = date(int(edate[2]), int(edate[0]), int(edate[1]))
-    costs = []
+    return get_data(symbol.get().upper(), start_date=i_date, end_date=f_date)["close"].round(2)
 
-    while True:
+    '''while True:
         end = i_date + timedelta(days=59)
 
         if end < f_date:
@@ -46,6 +81,7 @@ def data_cost():
 
         elif end == f_date:
             return costs
+    '''
 
 
 def calcular_r_sub_j(x):
@@ -55,21 +91,24 @@ def calcular_r_sub_j(x):
         r.append(r_i)
     return r
 
+
 def calcular_esperanza_compra(lista_xt_finales, k, N):
     #N = 1000 #Numero de simulaciones
     sum = 0
-    for i in range(len(lista_xt_finales)):
+    for i in range(N):
         m = max(lista_xt_finales[i] - k, 0)
         sum = sum + m
     return sum/N
 
+
 def calcular_esperanza_venta(lista_xt_finales, k, N):
     #N = 1000 #Numero de simulaciones
     sum = 0
-    for i in range(len(lista_xt_finales)):
+    for i in range(N):
         m = max(k - lista_xt_finales[i], 0)
         sum = sum + m
     return sum/N
+
 
 def calculate(*args):
     try:
@@ -77,8 +116,6 @@ def calculate(*args):
         x = data_cost()
         print(x)
         r = float(interest.get())/12
-        #k = sum(x)/len(x)
-        # AGREGAR A INTERFAZ
 
         r_p = calcular_r_sub_j(x)
         sigma = np.std(r_p)
@@ -119,15 +156,10 @@ def calculate(*args):
             #print('out' + str(lista_x_simulacion))
             lista_x_finales.append(lista_x_simulacion[-1])
 
-
-        # Lo demas que queda hacer, es calcular la esperanza con la formula que estan en las imagenes y luego
-        # multiplicarlo por e^(-r*Tiempo_maduracion)
-
-
         #print('LISTAS:' + str(lista_x_finales))
 
         #print(np.std(lista_x_finales))
-        k = int(sum(lista_x_finales) / len(lista_x_finales))
+        k = int(sum(lista_x_finales) / len(lista_x_finales))  # promedio de valores simulados
         #print(k)
 
         esp_compra = calcular_esperanza_compra(lista_x_finales, k, n)
@@ -135,15 +167,18 @@ def calculate(*args):
 
         print(str(esp_compra) + ':::::::' + str(esp_venta))
 
+        #resultados = [esp_compra * np.exp(-r * T), esp_venta * np.exp(-r * T) ]
         f_compra = esp_compra * np.exp(-r * T)
         f_venta = esp_venta * np.exp(-r * T)
-
-
         result.set('Valor al comprar: ' + str(f_compra.round(6)) + '\n' + 'Valor al vender: ' + str(f_venta.round(6)))
+
+        start = mclass(window, lista_x_finales)
+
 
     except ValueError:
         result.set("Revise los datos ingresados")
         pass
+
 
 window = Tk()
 window.title("Valorización de opciones sobre acciones")
@@ -204,11 +239,7 @@ else:
 
 for child in mainframe.winfo_children(): child.grid_configure(padx=20, pady=5)
 
-bar_chart = pygal.Bar()                                            # Then create a bar graph object
-bar_chart.add('Fibonacci', [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55])  # Add some values
-bar_chart.render_to_file('bar_chart.svg')
-
 symbol_entry.focus()
+#result.set('Valor al comprar: ' + str(results[0].round(6)) + '\n' + 'Valor al vender: ' + str(results[1].round(6)))
 window.bind('<Return>', calculate)
-
 window.mainloop()
