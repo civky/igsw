@@ -79,6 +79,7 @@ def sel_rb():
     #Label.config(text=selection)
     print(selection)
 
+
 def data_cost():
 
     sdate = start_date.get().split('/')

@@ -2,10 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="015089c4-47f0-43ac-9f54-dbbdb3eea326" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/page1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/page2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/proy-EO.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/proy-EO.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -17,7 +13,7 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/igsw$page1.coverage" NAME="page1 Coverage Results" MODIFIED="1533013020251" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/igsw$main.coverage" NAME="main Coverage Results" MODIFIED="1533323194952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/igsw$main.coverage" NAME="main Coverage Results" MODIFIED="1533351569916" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/proy_EO$main.coverage" NAME="main Coverage Results" MODIFIED="1532989596004" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/igsw$page2.coverage" NAME="page2 Coverage Results" MODIFIED="1533021036636" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
@@ -77,12 +73,12 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="2422" />
+          <entry key="py" value="2455" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="2422" />
+          <entry key="Python" value="2455" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -104,12 +100,19 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="320">
-              <caret line="72" column="29" lean-forward="true" selection-start-line="72" selection-start-column="29" selection-end-line="72" selection-end-column="29" />
+            <state relative-caret-position="146">
+              <caret line="113" column="23" selection-start-line="113" selection-start-column="4" selection-end-line="113" selection-end-column="23" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
-                <marker date="1533064011251" expanded="true" signature="2100:2332" ph="..." />
-                <marker date="1533064011251" expanded="false" signature="2345:2461" ph="..." />
+                <element signature="e#462#1923#0" />
+                <element signature="e#1950#2081#0" />
+                <element signature="e#2105#2329#0" />
+                <element signature="e#2350#2459#0" />
+                <element signature="e#3655#3791#0" />
+                <element signature="e#3853#4004#0" />
+                <element signature="e#4245#7327#0" />
+                <marker date="1533349278723" expanded="false" signature="2100:2332" ph="..." />
+                <marker date="1533349278723" expanded="true" signature="2345:2462" ph="..." />
               </folding>
             </state>
           </provider>
@@ -323,13 +326,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.09060403" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4986577" weight="0.32765958" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.88456374" weight="0.33617023" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.8838926" visible="true" weight="0.33617023" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4986577" weight="0.39858156" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -337,8 +341,8 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.49731544" weight="0.32624114" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="10" sideWeight="0.62885904" visible="true" weight="0.32624114" />
-      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.37114093" side_tool="true" visible="true" weight="0.32624114" />
+      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.62885904" weight="0.32624114" />
+      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.11610738" side_tool="true" visible="true" weight="0.33617023" />
       <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.490604" weight="0.32624114" />
       <window_info anchor="bottom" id="Messages" order="13" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -481,12 +485,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="320">
-          <caret line="72" column="29" lean-forward="true" selection-start-line="72" selection-start-column="29" selection-end-line="72" selection-end-column="29" />
+        <state relative-caret-position="146">
+          <caret line="113" column="23" selection-start-line="113" selection-start-column="4" selection-end-line="113" selection-end-column="23" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
-            <marker date="1533064011251" expanded="true" signature="2100:2332" ph="..." />
-            <marker date="1533064011251" expanded="false" signature="2345:2461" ph="..." />
+            <element signature="e#462#1923#0" />
+            <element signature="e#1950#2081#0" />
+            <element signature="e#2105#2329#0" />
+            <element signature="e#2350#2459#0" />
+            <element signature="e#3655#3791#0" />
+            <element signature="e#3853#4004#0" />
+            <element signature="e#4245#7327#0" />
+            <marker date="1533349278723" expanded="false" signature="2100:2332" ph="..." />
+            <marker date="1533349278723" expanded="true" signature="2345:2462" ph="..." />
           </folding>
         </state>
       </provider>
