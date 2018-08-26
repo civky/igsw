@@ -88,28 +88,6 @@ def data_cost():
     f_date = date(int(edate[2]), int(edate[0]), int(edate[1]))
     return get_data(symbol.get().upper(), start_date=i_date, end_date=f_date)["close"].round(2)
 
-    '''while True:
-        end = i_date + timedelta(days=59)
-
-        if end < f_date:
-            #costs.append(get_data(symbol.get().upper(), start_date=i_date, end_date=end)["close"].round(2))
-            for y in get_data(symbol.get().upper(), start_date=i_date, end_date=end)["close"].round(2):
-                costs.append(y)
-            #print('1' + str(costs))
-            i_date = end
-            continue
-
-        elif end > f_date and i_date != f_date:
-            #costs.append(get_data(symbol.get().upper(), start_date=i_date, end_date=f_date)["close"].data.round(2))
-            for y in get_data(symbol.get().upper(), start_date=i_date, end_date=f_date)["close"].round(2):
-                costs.append(y)
-            #print('2' + str(costs))
-            return costs
-
-        elif end == f_date:
-            return costs
-    '''
-
 
 def calcular_r_sub_j(x):
     r = list()  # Aqui iran los r_j
