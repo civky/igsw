@@ -392,7 +392,7 @@ def xkcd(scale=1, length=100, randomness=2):
             "xkcd mode is not compatible with text.usetex = True")
 
     from matplotlib import patheffects
-    xkcd_ctx = rc_context({
+    return rc_context({
         'font.family': ['xkcd', 'Humor Sans', 'Comic Sans MS'],
         'font.size': 14.0,
         'path.sketch': (scale, length, randomness),
@@ -409,21 +409,6 @@ def xkcd(scale=1, length=100, randomness=2):
         'ytick.major.size': 8,
         'ytick.major.width': 3,
     })
-    xkcd_ctx.__enter__()
-
-    # In order to make the call to `xkcd` that does not use a context manager
-    # (cm) work, we need to enter into the cm ourselves, and return a dummy
-    # cm that does nothing on entry and cleans up the xkcd context on exit.
-    # Additionally, we need to keep a reference to the dummy cm because it
-    # would otherwise be exited when GC'd.
-
-    class dummy_ctx(object):
-        def __enter__(self):
-            pass
-
-        __exit__ = xkcd_ctx.__exit__
-
-    return dummy_ctx()
 
 
 ## Figures ##
@@ -878,9 +863,9 @@ def axes(arg=None, **kwargs):
         - 4-tuple of floats *rect* = ``[left, bottom, width, height]``.
           A new axes is added with dimensions *rect* in normalized
           (0, 1) units using `~.Figure.add_axes` on the current figure.
-        - `.Axes`: This is equivalent to `.pyplot.sca`. It sets the current
-          axes to *arg*. Note: This implicitly changes the current figure to
-          the parent of *arg*.
+        - `~matplotlib.axes.Axes`: This is equivalent to `.pyplot.sca`.
+          It sets the current axes to *arg*. Note: This implicitly
+          changes the current figure to the parent of *arg*.
 
           .. note:: The use of an Axes as an argument is deprecated and will be
                     removed in v3.0. Please use `.pyplot.sca` instead.
@@ -994,16 +979,16 @@ def subplot(*args, **kwargs):
 
        subplot(nrows, ncols, index, **kwargs)
 
-    In the current figure, create and return an `.Axes`, at position *index*
-    of a (virtual) grid of *nrows* by *ncols* axes.  Indexes go from 1 to
-    ``nrows * ncols``, incrementing in row-major order.
+    In the current figure, create and return an `~matplotlib.axes.Axes`,
+    at position *index* of a (virtual) grid of *nrows* by *ncols* axes.
+    Indexes go from 1 to ``nrows * ncols``, incrementing in row-major order.
 
     If *nrows*, *ncols* and *index* are all less than 10, they can also be
     given as a single, concatenated, three-digit number.
 
     For example, ``subplot(2, 3, 3)`` and ``subplot(233)`` both create an
-    `.Axes` at the top right corner of the current figure, occupying half of
-    the figure height and a third of the figure width.
+    `matplotlib.axes.Axes` at the top right corner of the current figure,
+    occupying half of the figure height and a third of the figure width.
 
     .. note::
 
@@ -1106,19 +1091,20 @@ def subplots(nrows=1, ncols=1, sharex=False, sharey=False, squeeze=True,
             - 'col': each subplot column will share an x- or y-axis.
 
         When subplots have a shared x-axis along a column, only the x tick
-        labels of the bottom subplot are visible.  Similarly, when subplots
+        labels of the bottom subplot are created. Similarly, when subplots
         have a shared y-axis along a row, only the y tick labels of the first
-        column subplot are visible.
+        column subplot are created. To later turn other subplots' ticklabels
+        on, use :meth:`~matplotlib.axes.Axes.tick_params`.
 
     squeeze : bool, optional, default: True
-        - If True, extra dimensions are squeezed out from the returned Axes
-          object:
+        - If True, extra dimensions are squeezed out from the returned
+          array of Axes:
 
             - if only one subplot is constructed (nrows=ncols=1), the
               resulting single Axes object is returned as a scalar.
-            - for Nx1 or 1xN subplots, the returned object is a 1D numpy
-              object array of Axes objects are returned as numpy 1D arrays.
-            - for NxM, subplots with N>1 and M>1 are returned as a 2D arrays.
+            - for Nx1 or 1xM subplots, the returned object is a 1D numpy
+              object array of Axes objects.
+            - for NxM, subplots with N>1 and M>1 are returned as a 2D array.
 
         - If False, no squeezing at all is done: the returned Axes object is
           always a 2D array containing Axes instances, even if it ends up
@@ -1368,17 +1354,23 @@ def tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None):
 
 def box(on=None):
     """
-    Turn the axes box on or off.
+    Turn the axes box on or off on the current axes.
 
     Parameters
     ----------
     on : bool or None
-        The new axes box state.  If ``None``, toggle the state.
+        The new `~matplotlib.axes.Axes` box state. If ``None``, toggle
+        the state.
+
+    See Also
+    --------
+    :meth:`matplotlib.axes.Axes.set_frame_on`
+    :meth:`matplotlib.axes.Axes.get_frame_on`
     """
     ax = gca()
-    on = _string_to_bool(on)
     if on is None:
         on = not ax.get_frame_on()
+    on = _string_to_bool(on)
     ax.set_frame_on(on)
 
 
@@ -2386,7 +2378,7 @@ def imsave(*args, **kwargs):
     return _imsave(*args, **kwargs)
 
 
-def matshow(A, fignum=None, **kw):
+def matshow(A, fignum=None, **kwargs):
     """
     Display an array as a matrix in a new figure window.
 
@@ -2397,21 +2389,34 @@ def matshow(A, fignum=None, **kw):
 
     Tick labels for the xaxis are placed on top.
 
-    With the exception of *fignum*, keyword arguments are passed to
-    :func:`~matplotlib.pyplot.imshow`.  You may set the *origin*
-    kwarg to "lower" if you want the first row in the array to be
-    at the bottom instead of the top.
+    Parameters
+    ----------
+    A : array-like(M, N)
+        The matrix to be displayed.
 
+    fignum : None or int or False
+        If *None*, create a new figure window with automatic numbering.
 
-    *fignum*: [ None | integer | False ]
-      By default, :func:`matshow` creates a new figure window with
-      automatic numbering.  If *fignum* is given as an integer, the
-      created figure will use this figure number.  Because of how
-      :func:`matshow` tries to set the figure aspect ratio to be the
-      one of the array, if you provide the number of an already
-      existing figure, strange things may happen.
+        If *fignum* is an integer, draw into the figure with the given number
+        (create it if it does not exist).
 
-      If *fignum* is *False* or 0, a new figure window will **NOT** be created.
+        If 0 or *False*, use the current axes if it exists instead of creating
+        a new figure.
+
+        .. note::
+
+           Because of how `.Axes.matshow` tries to set the figure aspect
+           ratio to be the one of the array, strange things may happen if you
+           reuse an existing figure.
+
+    Returns
+    -------
+    image : `~matplotlib.image.AxesImage`
+
+    Other Parameters
+    ----------------
+    **kwargs : `~matplotlib.axes.Axes.imshow` arguments
+
     """
     A = np.asanyarray(A)
     if fignum is False or fignum is 0:
@@ -2421,7 +2426,7 @@ def matshow(A, fignum=None, **kw):
         fig = figure(fignum, figsize=figaspect(A))
         ax  = fig.add_axes([0.15, 0.09, 0.775, 0.775])
 
-    im = ax.matshow(A, **kw)
+    im = ax.matshow(A, **kwargs)
     sci(im)
 
     return im

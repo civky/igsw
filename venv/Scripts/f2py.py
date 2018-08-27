@@ -1,4 +1,4 @@
-#!C:\Users\Vicky\PycharmProjects\proy-EO\venv\Scripts\python.exe
+#!C:\Users\Vicky\PycharmProjects\igsw\venv\Scripts\pythonw.exe
 # See http://cens.ioc.ee/projects/f2py2e/
 from __future__ import division, print_function
 

@@ -10,7 +10,6 @@ from __future__ import absolute_import, division, print_function
 
 import six
 from six.moves import xrange, zip
-import bz2
 import collections
 import contextlib
 import datetime
@@ -602,6 +601,9 @@ def to_filehandle(fname, flag='rU', return_opened=False, encoding=None):
             flag = flag.replace('U', '')
             fh = gzip.open(fname, flag)
         elif fname.endswith('.bz2'):
+            # python may not be complied with bz2 support,
+            # bury import until we need it
+            import bz2
             # get rid of 'U' in flag for bz2 files
             flag = flag.replace('U', '')
             fh = bz2.BZ2File(fname, flag)
@@ -1298,7 +1300,7 @@ def report_memory(i=0):  # argument may go away
     pid = os.getpid()
     if sys.platform == 'sunos5':
         try:
-            a2 = Popen(str('ps -p %d -o osz') % pid, shell=True,
+            a2 = Popen(['ps', '-p', '%d' % pid, '-o', 'osz'],
                        stdout=PIPE).stdout.readlines()
         except OSError:
             raise NotImplementedError(
@@ -1307,7 +1309,7 @@ def report_memory(i=0):  # argument may go away
         mem = int(a2[-1].strip())
     elif sys.platform.startswith('linux'):
         try:
-            a2 = Popen(str('ps -p %d -o rss,sz') % pid, shell=True,
+            a2 = Popen(['ps', '-p', '%d' % pid, '-o', 'rss,sz'],
                        stdout=PIPE).stdout.readlines()
         except OSError:
             raise NotImplementedError(
@@ -1316,7 +1318,7 @@ def report_memory(i=0):  # argument may go away
         mem = int(a2[1].split()[1])
     elif sys.platform.startswith('darwin'):
         try:
-            a2 = Popen(str('ps -p %d -o rss,vsz') % pid, shell=True,
+            a2 = Popen(['ps', '-p', '%d' % pid, '-o', 'rss,vsz'],
                        stdout=PIPE).stdout.readlines()
         except OSError:
             raise NotImplementedError(
@@ -2830,3 +2832,21 @@ def _str_lower_equal(obj, s):
     cannot be used in a boolean context.
     """
     return isinstance(obj, six.string_types) and obj.lower() == s
+
+
+@contextlib.contextmanager
+def _setattr_cm(obj, **kwargs):
+    """Temporarily set some attributes; restore original state at context exit.
+    """
+    sentinel = object()
+    origs = [(attr, getattr(obj, attr, sentinel)) for attr in kwargs]
+    try:
+        for attr, val in kwargs.items():
+            setattr(obj, attr, val)
+        yield
+    finally:
+        for attr, orig in origs:
+            if orig is sentinel:
+                delattr(obj, attr)
+            else:
+                setattr(obj, attr, orig)
