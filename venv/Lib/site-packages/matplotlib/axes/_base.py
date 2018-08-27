@@ -420,6 +420,8 @@ class _AxesBase(martist.Artist):
         return "{0}({1[0]:g},{1[1]:g};{1[2]:g}x{1[3]:g})".format(
             type(self).__name__, self._position.bounds)
 
+    @docstring.Substitution(scale=' | '.join(
+        [repr(x) for x in mscale.get_scale_names()]))
     def __init__(self, fig, rect,
                  facecolor=None,  # defaults to rc axes.facecolor
                  frameon=True,
@@ -431,10 +433,10 @@ class _AxesBase(martist.Artist):
                  **kwargs
                  ):
         """
-        Build an :class:`Axes` instance in
-        :class:`~matplotlib.figure.Figure` *fig* with
+        Build an `~axes.Axes` instance in
+        `~matplotlib.figure.Figure` *fig* with
         *rect=[left, bottom, width, height]* in
-        :class:`~matplotlib.figure.Figure` coordinates
+        `~matplotlib.figure.Figure` coordinates
 
         Optional keyword arguments:
 
@@ -477,8 +479,8 @@ class _AxesBase(martist.Artist):
           *yticklabels*      sequence of strings
           *yticks*           sequence of floats
           ================   =========================================
-        """ % {'scale': ' | '.join(
-            [repr(x) for x in mscale.get_scale_names()])}
+        """
+
         martist.Artist.__init__(self)
         if isinstance(rect, mtransforms.Bbox):
             self._position = rect
@@ -1160,6 +1162,7 @@ class _AxesBase(martist.Artist):
         color : color
         """
         self._facecolor = color
+        self.stale = True
         return self.patch.set_facecolor(color)
     set_fc = set_facecolor
 
@@ -1177,40 +1180,65 @@ class _AxesBase(martist.Artist):
 
     def set_prop_cycle(self, *args, **kwargs):
         """
-        Set the property cycle for any future plot commands on this Axes.
+        Set the property cycle of the Axes.
 
-        set_prop_cycle(arg)
-        set_prop_cycle(label, itr)
-        set_prop_cycle(label1=itr1[, label2=itr2[, ...]])
+        The property cycle controls the style properties such as color,
+        marker and linestyle of future plot commands. The style properties
+        of data already added to the Axes are not modified.
 
-        Form 1 simply sets given `Cycler` object.
+        Call signatures::
 
-        Form 2 creates and sets  a `Cycler` from a label and an iterable.
+          set_prop_cycle(cycler)
+          set_prop_cycle(label=values[, label2=values2[, ...]])
+          set_prop_cycle(label, values)
 
-        Form 3 composes and sets  a `Cycler` as an inner product of the
-        pairs of keyword arguments. In other words, all of the
-        iterables are cycled simultaneously, as if through zip().
+        Form 1 sets given `~cycler.Cycler` object.
+
+        Form 2 creates a `~cycler.Cycler` which cycles over one or more
+        properties simultaneously and set it as the property cycle of the
+        axes. If multiple properties are given, their value lists must have
+        the same length. This is just a shortcut for explicitly creating a
+        cycler and passing it to the function, i.e. it's short for
+        ``set_prop_cycle(cycler(label=values label2=values2, ...))``.
+
+        Form 3 creates a `~cycler.Cycler` for a single property and set it
+        as the property cycle of the axes. This form exists for compatibility
+        with the original `cycler.cycler` interface. Its use is discouraged
+        in favor of the kwarg form, i.e. ``set_prop_cycle(label=values)``.
 
         Parameters
         ----------
-        arg : Cycler
-            Set the given Cycler.
-            Can also be `None` to reset to the cycle defined by the
+        cycler : Cycler
+            Set the given Cycler. *None* resets to the cycle defined by the
             current style.
 
         label : str
-            The property key. Must be a valid `Artist` property.
+            The property key. Must be a valid `.Artist` property.
             For example, 'color' or 'linestyle'. Aliases are allowed,
             such as 'c' for 'color' and 'lw' for 'linewidth'.
 
-        itr : iterable
+        values : iterable
             Finite-length iterable of the property values. These values
             are validated and will raise a ValueError if invalid.
 
+        Examples
+        --------
+        Setting the property cycle for a single property:
+
+        >>> ax.set_prop_cycle(color=['red', 'green', 'blue'])
+
+        Setting the property cycle for simultaneously cycling over multiple
+        properties (e.g. red circle, green plus, blue cross):
+
+        >>> ax.set_prop_cycle(color=['red', 'green', 'blue'],
+        ...                   marker=['o', '+', 'x'])
+
         See Also
         --------
-            :func:`cycler`      Convenience function for creating your
-                                own cyclers.
+        matplotlib.rcsetup.cycler
+            Convenience function for creating validated cyclers for properties.
+        cycler.cycler
+            The original function for creating unvalidated cyclers.
 
         """
         if args and kwargs:
@@ -3553,7 +3581,7 @@ class _AxesBase(martist.Artist):
 
     def get_yticklabels(self, minor=False, which=None):
         """
-        Get the x tick labels as a list of :class:`~matplotlib.text.Text`
+        Get the y tick labels as a list of :class:`~matplotlib.text.Text`
         instances.
 
         Parameters

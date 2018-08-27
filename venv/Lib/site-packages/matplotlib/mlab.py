@@ -3323,7 +3323,7 @@ def rec2csv(r, fname, delimiter=',', formatd=None, missing='',
         fh.close()
 
 
-@cbook.deprecated('2.2')
+@cbook.deprecated('2.2', alternative='scipy.interpolate.griddata')
 def griddata(x, y, z, xi, yi, interp='nn'):
     """
     Interpolates from a nonuniformly spaced grid to some other grid.
@@ -3898,8 +3898,7 @@ def cross_from_below(x, threshold):
         t = np.arange(0.0, 2.0, 0.1)
         s = np.sin(2*np.pi*t)
 
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
+        fig, ax = plt.subplots()
         ax.plot(t, s, '-o')
         ax.axhline(0.5)
         ax.axhline(-0.5)

@@ -1,0 +1,6 @@
+#!C:\Users\Vicky\PycharmProjects\igsw\venv\Scripts\pythonw.exe
+
+from cx_Freeze import main
+
+main()
+
