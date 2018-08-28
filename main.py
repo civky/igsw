@@ -13,7 +13,8 @@ from matplotlib.figure import Figure
 
 LARGE_FONT = ("Verdana", 12)
 ARGUS = list()
-
+BG = "white"  # 333333
+FG = "#333333"
 
 def acceso(pasw):
 
@@ -58,7 +59,7 @@ class StartPage(Frame):
         Frame.__init__(self, parent)
 
         label = Label(self, text="Para acceder ingrese su contraseña", font=LARGE_FONT)
-        label.grid(column=1, row=1, sticky=(N,E))
+        label.grid(column=1, row=1, sticky=(N, E))
 
         pasw = StringVar()
         pasw_entry = Entry(self, width=40, textvariable=pasw, show="*")
@@ -75,7 +76,7 @@ class PageOne(Frame):
 
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
-        Frame.configure(self, bg="#333333")
+        Frame.configure(self, bg=BG)
 
         self.controller = controller
         self.symbol = StringVar()
@@ -94,11 +95,11 @@ class PageOne(Frame):
 
         self.rb.set(1)
 
-        R1 = Radiobutton(self, bg="#333333", fg="white", text="Yahoo finances",
+        R1 = Radiobutton(self, bg=BG, fg=FG, text="Yahoo finances",
                          variable=self.rb, value=1, font=('Impact', '13'), command=self.sel_rb).grid(column=1, row=2, sticky=W,
                                                                                            columnspan=3)
 
-        R2 = Radiobutton(self, bg="#333333", fg="white", text="Subir archivo",
+        R2 = Radiobutton(self, bg=BG, fg=FG, text="Subir archivo",
                          variable=self.rb, value=2, font=('Impact', '13'), command=self.sel_rb).grid(column=1, row=7, sticky=W,
                                                                                            columnspan=3)
 
@@ -117,7 +118,7 @@ class PageOne(Frame):
         col_data_entry = Entry(self, width=13, textvariable=self.col_data)
         col_data_entry.grid(column=2, row=10, sticky=(W, E))
 
-        Label(self, textvariable=self.result, bg="#333333", fg="white").grid(column=3, row=9, sticky=(W, E))
+        Label(self, textvariable=self.result, bg=BG, fg=FG).grid(column=3, row=9, sticky=(W, E))
         Label(self, textvariable=self.file_csv).grid(column=1, row=8, sticky=(W, E))
 
         interest_entry = Entry(self, width=13, textvariable=self.interest)
@@ -129,29 +130,29 @@ class PageOne(Frame):
         n_iter_entry = Entry(self, width=13, textvariable=self.n_iter)
         n_iter_entry.grid(column=4, row=4, sticky=(W, E))
 
-        title1 = Label(self, text="Obtención de datos", bg="#333333", fg="white", font=('Impact', '20')).grid(
+        title1 = Label(self, text="Obtención de datos", bg=BG, fg=FG, font=('Impact', '20')).grid(
             column=1, row=1, sticky=W)
-        title2 = Label(self, text="Ingresar parámetros", bg="#333333", fg="white", font=('Impact', '20')).grid(
+        title2 = Label(self, text="Ingresar parámetros", bg=BG, fg=FG, font=('Impact', '20')).grid(
             column=3, row=1, sticky=W)
 
-        Label(self, text="Código empresa", bg="#333333", fg="white").grid(column=1, row=3, sticky=W)
-        Label(self, text="Fecha inicial", bg="#333333", fg="white").grid(column=1, row=4, sticky=W)
-        Label(self, text="Fecha final", bg="#333333", fg="white").grid(column=1, row=5, sticky=W)
-        Label(self, text="(ej: MM/DD/YYYY)", bg="#333333", fg="white").grid(column=2, row=6)
+        Label(self, text="Código empresa", bg=BG, fg=FG).grid(column=1, row=3, sticky=W)
+        Label(self, text="Fecha inicial", bg=BG, fg=FG).grid(column=1, row=4, sticky=W)
+        Label(self, text="Fecha final", bg=BG, fg=FG).grid(column=1, row=5, sticky=W)
+        Label(self, text="(ej: MM/DD/YYYY)", bg=BG, fg=FG).grid(column=2, row=6)
 
         Button(self, text="Elegir archivo", command=self.open_file).grid(column=2, row=8, sticky=W)
-        Label(self, text="Ingresar n° de columna fecha", bg="#333333", fg="white").grid(column=1, row=9, sticky=W)
-        Label(self, text="Ingresar n° de columna datos", bg="#333333", fg="white").grid(column=1, row=10, sticky=W)
+        Label(self, text="Ingresar n° de columna fecha", bg=BG, fg=FG).grid(column=1, row=9, sticky=W)
+        Label(self, text="Ingresar n° de columna datos", bg=BG, fg=FG).grid(column=1, row=10, sticky=W)
 
-        Label(self, text="Tasa de interés", bg="#333333", fg="white").grid(column=3, row=2, sticky=W)
-        Label(self, text="Tiempo de madurez", bg="#333333", fg="white").grid(column=3, row=3, sticky=W)
-        Label(self, text="Número de iteraciones", bg="#333333", fg="white").grid(column=3, row=4, sticky=W)
-        Label(self, text="Número de iteraciones del tiempo", bg="#333333", fg="white").grid(column=3, row=8, sticky=W)
-        Label(self, text="Resultado", bg="#333333", fg="white", font=('Impact', '20')).grid(column=3, row=10, sticky=W)
+        Label(self, text="Tasa de interés", bg=BG, fg=FG).grid(column=3, row=2, sticky=W)
+        Label(self, text="Tiempo de madurez", bg=BG, fg=FG).grid(column=3, row=3, sticky=W)
+        Label(self, text="Número de iteraciones", bg=BG, fg=FG).grid(column=3, row=4, sticky=W)
+        Label(self, text="Número de iteraciones del tiempo", bg=BG, fg=FG).grid(column=3, row=8, sticky=W)
+        Label(self, text="Resultado", bg=BG, fg=FG, font=('Impact', '20')).grid(column=3, row=10, sticky=W)
 
-        Label(self, text="---", bg="#333333", fg="#333333").grid(column=1, row=11, sticky=W)
+        Label(self, text="---", bg=BG, fg=BG).grid(column=1, row=11, sticky=W)
 
-        btn_calcular = Button(self, text="Calcular", command=self.calculate, bg="#39C0BA", fg="white").grid(column=4, row=7)
+        btn_calcular = Button(self, text="Calcular", command=self.calculate, bg="#39C0BA", fg=FG).grid(column=4, row=7)
         symbol_entry.focus()
         self.bind('<Return>', self.calculate)
 
@@ -310,9 +311,9 @@ class PageTwo(Frame):
         self.plot()
         global ARGUS
         print(ARGUS[1])
-        Label(self, text='Precio de venta: ' + str(ARGUS[1]), bg="#333333", fg="white").grid(column=1, row=2,
+        Label(self, text='Precio de venta: ' + str(ARGUS[1]), bg=BG, fg=FG).grid(column=1, row=2,
                                                                                                 sticky=W)
-        Label(self, text='Precio de compra: ' + str(ARGUS[2]), bg="#333333", fg="white").grid(column=1, row=3,
+        Label(self, text='Precio de compra: ' + str(ARGUS[2]), bg=BG, fg=FG).grid(column=1, row=3,
                                                                                                  sticky=W)
         button_page_one = Button(self, text="Volver", command=lambda: controller.show_frame(PageOne))
         button_page_one.grid(row=2, column=1, sticky=E)
